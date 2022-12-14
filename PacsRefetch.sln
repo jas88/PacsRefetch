@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacsRefetch", "PacsRefetch\PacsRefetch.csproj", "{A1477600-D914-472C-8956-510F5F2B1697}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.PacsRefetch", "Test.PacsRefetch\Test.PacsRefetch.csproj", "{44D2CB86-699C-4FFB-B92B-7A3B36C49D99}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1477600-D914-472C-8956-510F5F2B1697}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1477600-D914-472C-8956-510F5F2B1697}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1477600-D914-472C-8956-510F5F2B1697}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1477600-D914-472C-8956-510F5F2B1697}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44D2CB86-699C-4FFB-B92B-7A3B36C49D99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44D2CB86-699C-4FFB-B92B-7A3B36C49D99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44D2CB86-699C-4FFB-B92B-7A3B36C49D99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44D2CB86-699C-4FFB-B92B-7A3B36C49D99}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
