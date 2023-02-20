@@ -25,4 +25,4 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
       - name: Build executable
         run:
-          dotnet publish -o lin -r linux-x64 -p:PublishSingleFile=true --self-contained true  -p:PublishReadyToRun=true -nologo
+          dotnet publish PacsRefetch/PacsRefetch.csproj -o lin -r linux-x64 -p:PublishSingleFile=true --self-contained true  -p:PublishReadyToRun=true -nologo
