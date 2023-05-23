@@ -21,7 +21,7 @@ static async void Run(Options o)
     var instanceCount = new ConcurrentDictionary<string, uint>();
 
     CStoreProvider.o = o;
-    var po = new ParallelOptions()
+    var po = new ParallelOptions
     {
         CancellationToken = Options.cts.Token
     };
@@ -58,13 +58,13 @@ static async void Run(Options o)
     var studyList = DicomCFindRequest.CreateStudyQuery(o.Patient,null,o.DicomWindow);
     studyList.Dataset.AddOrUpdate(DicomTag.StudyInstanceUID, "");
     studyList.Dataset.AddOrUpdate(DicomTag.NumberOfStudyRelatedInstances, "");
-    studyList.OnResponseReceived += async (req, res) =>
+
+    async void OnStudyListOnResponseReceived(DicomCFindRequest req, DicomCFindResponse res)
     {
         var ds = res.Dataset;
-        if (res.Status!=DicomStatus.Success || ds == null)
-            throw new ApplicationException($"Error or null Dataset received in CFind response {res} (status {res.Status}) to {req}");
+        if (res.Status != DicomStatus.Success || ds == null) throw new ApplicationException($"Error or null Dataset received in CFind response {res} (status {res.Status}) to {req}");
         var study = ds.GetString(DicomTag.StudyInstanceUID);
-        
+
         // Three possibilities: fully fetched, not fetched at all, partially fetched.
         // Or the strange case, if some entries have been expired so we now have
         // *more* instances for this study than the PACS does!
@@ -75,10 +75,11 @@ static async void Run(Options o)
             var theirInstances = ds.GetSingleValue<int>(DicomTag.NumberOfStudyRelatedInstances);
             if (ourInstances < theirInstances)
                 partialStudies.Add(study);
-            else if (ourInstances > theirInstances)
-                await Console.Out.WriteLineAsync($"Disappearing instances detected");
+            else if (ourInstances > theirInstances) await Console.Out.WriteLineAsync("Disappearing instances detected");
         }
-    };
+    }
+
+    studyList.OnResponseReceived += OnStudyListOnResponseReceived;
     await client.AddRequestAsync(studyList);
     await client.SendAsync();
 

@@ -3,6 +3,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace PacsRefetch;
 
+[YamlSerializable]
 public class PacsParameters
 {
     public string Hostname { get; set; } = null!;
@@ -14,17 +15,21 @@ public class PacsParameters
 
     public override string ToString()
     {
-        return new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build()
+        return new StaticSerializerBuilder(new YamlContext()).WithNamingConvention(CamelCaseNamingConvention.Instance).Build()
             .Serialize(this);
     }
 
     public void Save(string file)
     {
-        File.WriteAllText(file, this.ToString());
+        File.WriteAllText(file, ToString());
     }
     public static PacsParameters Load(string file)
     {
-        return new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build()
+        return new StaticDeserializerBuilder(new YamlContext()).WithNamingConvention(CamelCaseNamingConvention.Instance).Build()
             .Deserialize<PacsParameters>(File.ReadAllText(file));
     }
 }
+
+[YamlStaticContext]
+public partial class YamlContext : YamlDotNet.Serialization.StaticContext
+{}

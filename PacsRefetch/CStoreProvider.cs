@@ -1,6 +1,5 @@
 using System.Text;
 using FellowOakDicom;
-using FellowOakDicom.Log;
 using FellowOakDicom.Network;
 using JetBrains.Annotations;
 
@@ -20,9 +19,9 @@ public class CStoreProvider : DicomService, IDicomServiceProvider, IDicomCEchoPr
     /// File Transfer Syntax list
     /// List of acceptable transfer syntax names, lossless first
     /// </summary>
-    internal static DicomTransferSyntax[] fts= DicomTransferSyntax.KnownEntries.OrderBy(o => o.IsLossy).ToArray();
+    internal static DicomTransferSyntax[] fts= DicomTransferSyntax.KnownEntries.OrderBy(e => e.IsLossy).ToArray();
     
-    public CStoreProvider(INetworkStream stream, Encoding fallbackEncoding, ILogger logger, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, logger, dependencies)
+    public CStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Microsoft.Extensions.Logging.ILogger logger, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, logger, dependencies)
     {
     }
 
@@ -60,7 +59,7 @@ public class CStoreProvider : DicomService, IDicomServiceProvider, IDicomCEchoPr
 
     public Task OnReceiveAssociationReleaseRequestAsync()
     {
-        Console.Error.WriteLine($"Release request received");
+        Console.Error.WriteLine("Release request received");
         return SendAssociationReleaseResponseAsync();
     }
 
