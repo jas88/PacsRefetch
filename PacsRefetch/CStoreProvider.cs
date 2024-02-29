@@ -4,26 +4,30 @@ using FellowOakDicom.Network;
 using JetBrains.Annotations;
 
 namespace PacsRefetch;
-[UsedImplicitly]
-public class CStoreProvider : DicomService, IDicomServiceProvider, IDicomCEchoProvider, IDicomCStoreProvider
-{
-    internal static Options? o;
 
-    private static readonly DicomTransferSyntax[] ts = {
+[UsedImplicitly]
+public class CStoreProvider(
+    INetworkStream stream,
+    Encoding fallbackEncoding,
+    Microsoft.Extensions.Logging.ILogger logger,
+    DicomServiceDependencies dependencies)
+    : DicomService(stream, fallbackEncoding, logger, dependencies), IDicomServiceProvider, IDicomCEchoProvider,
+        IDicomCStoreProvider
+{
+    internal static Options? O;
+
+    private static readonly DicomTransferSyntax[] TransferSyntaxes =
+    [
         DicomTransferSyntax.ExplicitVRLittleEndian,
         DicomTransferSyntax.ExplicitVRBigEndian,
         DicomTransferSyntax.ImplicitVRLittleEndian
-    };
+    ];
 
     /// <summary>
     /// File Transfer Syntax list
     /// List of acceptable transfer syntax names, lossless first
     /// </summary>
-    internal static DicomTransferSyntax[] fts= DicomTransferSyntax.KnownEntries.OrderBy(e => e.IsLossy).ToArray();
-    
-    public CStoreProvider(INetworkStream stream, Encoding fallbackEncoding, Microsoft.Extensions.Logging.ILogger logger, DicomServiceDependencies dependencies) : base(stream, fallbackEncoding, logger, dependencies)
-    {
-    }
+    private static readonly DicomTransferSyntax[] FileTransferSyntaxes = DicomTransferSyntax.KnownEntries.OrderBy(static e => e.IsLossy).ToArray();
 
     public void OnReceiveAbort(DicomAbortSource source, DicomAbortReason reason)
     {
@@ -37,22 +41,20 @@ public class CStoreProvider : DicomService, IDicomServiceProvider, IDicomCEchoPr
 
     public Task OnReceiveAssociationRequestAsync(DicomAssociation association)
     {
-        ArgumentNullException.ThrowIfNull(o);
+        ArgumentNullException.ThrowIfNull(O);
         Console.Error.WriteLine($"Association request received to '{association.CalledAE}' from '{association.CallingAE}'");
-        if (association.CalledAE != o.Pacs.LocalName)
+        if (association.CalledAE != O.Pacs.LocalName)
             return SendAssociationRejectAsync(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
                 DicomRejectReason.CalledAENotRecognized);
-        if (association.CallingAE != o.Pacs.RemoteName)
+        if (association.CallingAE != O.Pacs.RemoteName)
             return SendAssociationRejectAsync(DicomRejectResult.Permanent, DicomRejectSource.ServiceUser,
                 DicomRejectReason.CallingAENotRecognized);
+
         foreach (var pc in association.PresentationContexts)
-        {
             if (pc.AbstractSyntax == DicomUID.Verification)
-                pc.AcceptTransferSyntaxes(ts);
+                pc.AcceptTransferSyntaxes(TransferSyntaxes);
             else if (pc.AbstractSyntax.StorageCategory != DicomStorageCategory.None)
-                pc.AcceptTransferSyntaxes(fts);
-            return SendAssociationAcceptAsync(association);
-        }
+                pc.AcceptTransferSyntaxes(FileTransferSyntaxes);
 
         return SendAssociationAcceptAsync(association);
     }
@@ -63,10 +65,8 @@ public class CStoreProvider : DicomService, IDicomServiceProvider, IDicomCEchoPr
         return SendAssociationReleaseResponseAsync();
     }
 
-    public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request)
-    {
-        return Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
-    }
+    public Task<DicomCEchoResponse> OnCEchoRequestAsync(DicomCEchoRequest request) =>
+        Task.FromResult(new DicomCEchoResponse(request, DicomStatus.Success));
 
     public async Task<DicomCStoreResponse> OnCStoreRequestAsync(DicomCStoreRequest request)
     {
