@@ -2,6 +2,6 @@
 .idea/.idea.PacsRefetch/.idea/encodings.xml
 .idea/.idea.PacsRefetch/.idea/indexLayout.xml
 .idea/.idea.PacsRefetch/.idea/vcs.xml
-.vs/PacsRefetch/xs/UserPrefs.xml
-.vs/PacsRefetch/xs/project-cache/PacsRefetch-Debug.json
-.vs/PacsRefetch/xs/project-cache/Test.PacsRefetch-Debug.json
+.vs/**
+**/bin/**
+**/obj/**
