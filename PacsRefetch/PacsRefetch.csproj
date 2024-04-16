@@ -12,6 +12,7 @@
     <PublishAot>true</PublishAot>
     <StripSymbols>true</StripSymbols>
 	<EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
   </PropertyGroup>
 
   <ItemGroup>
